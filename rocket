@@ -1,0 +1,222 @@
+import datetime
+import logging
+import pendulum
+from airflow import DAG
+from airflow.operators.empty import EmptyOperator
+from airflow.operators.python import BranchPythonOperator
+from airflow.utils.trigger_rule import TriggerRule  # Import TriggerRule
+
+from airflow.providers.gridgateway.operators.grid_gateway import (
+    GridGatewayOperator,
+)
+from airflow.providers.gridgateway.operators.sql import SQLOperator
+
+from helpers.config import Config
+config = Config(config_path="")
+
+log = logging.getLogger(__name__)
+
+# Set timezone to Pacific Standard Time (PST)
+local_tz = pendulum.tz.timezone("America/New_York")
+
+# Define the schedule based on the rdev_flag
+if config.rdev_flag is False:
+    schedule = "* * * * *"
+else:
+    schedule = None  # No schedule for rdev
+
+
+# Determines whether to skip or perform the Tableau refresh based on the configuration
+def skip_or_dont_skip_tableau_refresh():
+    # Retrieve the configuration from the DAG run context
+    if config.rdev_flag is True:
+        # If rdev_flag is True, skip the Tableau refresh and return the task for dashboard
+        return 'dashboard'
+    else:
+        # If rdev_flag is False, proceed with Tableau refresh
+        return 'Tableau'
+
+
+with DAG(
+    dag_id="dashboard",
+    default_args={
+        "owner": "julien",
+        "email": [js.ilboudo1@gmail.com],
+        "email_on_failure": True,
+        "email_on_retry": False,
+        "retries": 1,
+        "retry_delay": datetime.timedelta(minutes=5),
+    },
+    dagrun_timeout=datetime.timedelta(hours=3),
+    start_date=datetime.datetime(2023, 8, 1, tzinfo=local_tz),
+    catchup=False,
+    max_active_runs=1,
+    schedule=schedule,
+    tags=[
+        "dag_id=",
+        "test",
+        "auto-generated",
+    ],
+    access_control={"": {"can_read", "can_edit"}},
+    params={
+        "proxy_user": config.proxy_user,
+        "grid_gateway_dependencies": "@Artifact()",
+        "hive_schema_name": ,
+    }
+) as dag:
+
+    dashboard = EmptyOperator(
+        task_id="dashboard",
+        dag=dag,
+        trigger_rule=TriggerRule.NONE_FAILED   # Ensure this task runs regardless of upstream task states
+    )
+
+     = SQLOperator(
+        task_id="",
+        retries=3,
+        retry_delay=datetime.timedelta(minutes=5),
+        jdbc_url="",
+        polling_interval=10,
+        proxy_user="{{ params.proxy_user }}",
+        grid_gateway_dependencies=["{{ params.grid_gateway_dependencies }}"],
+        target_grid_cluster="",
+        enable_new_prop_values=True,
+        grid_gateway_params={
+            "dbName": "{{ params.hive_schema_name }}",
+            "jdbc.crypto.key.path": "bar",
+            "jdbc.encrypted.credential": "foo",
+            "jdbc.single.transaction": "false",
+            "jdbc.sql_statements.filepath": "",
+            "jdbc.userid": "{{ params.proxy_user }}",
+        },
+    )
+
+     = SQLOperator(
+        task_id="",
+        retries=3,
+        retry_delay=datetime.timedelta(minutes=5),
+        jdbc_url="=true",
+        polling_interval=10,
+        proxy_user="{{ params.proxy_user }}",
+        grid_gateway_dependencies=["{{ params.grid_gateway_dependencies }}"],
+        target_grid_cluster="",
+        enable_new_prop_values=True,
+        grid_gateway_params={
+            "dbName": "{{ params.hive_schema_name }}",
+            "jdbc.crypto.key.path": "bar",
+            "jdbc.encrypted.credential": "foo",
+            "jdbc.single.transaction": "false",
+            "jdbc.sql_statements.filepath": "",
+            "jdbc.userid": "{{ params.proxy_user }}",
+        },
+    )
+
+     = SQLOperator(
+        task_id="",
+        retries=3,
+        retry_delay=datetime.timedelta(minutes=5),
+        jdbc_url="jdbc:=true",
+        polling_interval=10,
+        proxy_user="{{ params.proxy_user }}",
+        grid_gateway_dependencies=["{{ params.grid_gateway_dependencies }}"],
+        target_grid_cluster="",
+        enable_new_prop_values=True,
+        grid_gateway_params={
+            "dbName": "{{ params.hive_schema_name }}",
+            "jdbc.crypto.key.path": "bar",
+            "jdbc.encrypted.credential": "foo",
+            "jdbc.single.transaction": "false",
+            "jdbc.sql_statements.filepath": "",
+            "jdbc.userid": "{{ params.proxy_user }}",
+        },
+    )
+
+     = SQLOperator(
+        task_id="",
+        retries=3,
+        retry_delay=datetime.timedelta(minutes=5),
+        jdbc_url="jdbc:=true",
+        polling_interval=10,
+        proxy_user="{{ params.proxy_user }}",
+        grid_gateway_dependencies=["{{ params.grid_gateway_dependencies }}"],
+        target_grid_cluster="",
+        enable_new_prop_values=True,
+        grid_gateway_params={
+            "dbName": "{{ params.hive_schema_name }}",
+            "jdbc.crypto.key.path": "bar",
+            "jdbc.encrypted.credential": "foo",
+            "jdbc.single.transaction": "false",
+            "jdbc.sql_statements.filepath": "",
+            "jdbc.userid": "{{ params.proxy_user }}",
+        },
+    )
+
+     = SQLOperator(
+        task_id="",
+        retries=3,
+        retry_delay=datetime.timedelta(minutes=5),
+        jdbc_url="",
+        polling_interval=10,
+        proxy_user="{{ params.proxy_user }}",
+        grid_gateway_dependencies=["{{ params.grid_gateway_dependencies }}"],
+        target_grid_cluster="",
+        enable_new_prop_values=True,
+        grid_gateway_params={
+            "dbName": "{{ params.hive_schema_name }}",
+            "jdbc.crypto.key.path": "bar",
+            "jdbc.encrypted.credential": "foo",
+            "jdbc.single.transaction": "false",
+            "jdbc.sql_statements.filepath": "",
+            "jdbc.userid": "{{ params.proxy_user }}",
+        },
+    )
+
+     = SQLOperator(
+        task_id="",
+        retries=3,
+        retry_delay=datetime.timedelta(minutes=5),
+        jdbc_url="jdbc:=true",
+        polling_interval=10,
+        proxy_user="{{ params.proxy_user }}",
+        grid_gateway_dependencies=["{{ params.grid_gateway_dependencies }}"],
+        target_grid_cluster="",
+        enable_new_prop_values=True,
+        grid_gateway_params={
+            "dbName": "{{ params.hive_schema_name }}",
+            "jdbc.crypto.key.path": "bar",
+            "jdbc.encrypted.credential": "foo",
+            "jdbc.single.transaction": "false",
+            "jdbc.sql_statements.filepath": "",
+            "jdbc.userid": "{{ params.proxy_user }}",
+        },
+    )
+
+    Tableau = GridGatewayOperator(
+        task_id="Tableau",
+        retries=3,
+        retry_delay=datetime.timedelta(minutes=5),
+        function_name="tableau",
+        function_namespace="grid",
+        function_version="1.0.0",
+        polling_interval=10,
+        proxy_user="{{ params.proxy_user }}",
+        grid_gateway_dependencies=["{{ params.grid_gateway_dependencies }}"],
+        target_grid_cluster="",
+        enable_new_prop_values=True,
+        grid_gateway_params={"workbook.name": "super"},
+    )
+
+    branch = BranchPythonOperator(
+        task_id='skip_or_dont_skip_tableau_refresh',
+        python_callable=skip_or_dont_skip_tableau_refresh,
+    )
+
+     >> [, , ]
+
+     >> 
+
+    [, ] >> 
+
+    >> branch
+
+    branch >> [Tableau] >> dashboard
